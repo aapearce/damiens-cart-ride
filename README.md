@@ -11,8 +11,11 @@ you fly off the track**, back to the start you go.
 - **C** — toggle chase / first‑person camera
 - **R** — restart from the beginning
 
-Top speed is 180 km/h. The cart steers itself along the rail; your job is the throttle —
-and braking in time for the corners.
+The cart steers itself along the rail; your job is the throttle — and braking in time for
+the corners. Watch the rail for **pads**: glowing cyan **boost** strips give you a speed
+surge, and orange **jump** ramps launch you into the air (you can't fly off a bend while
+airborne — land first). Corners are forgiving for a split second, so a quick brake tap
+saves you; only a wild overspeed flies off instantly.
 
 ## Multiplayer (one shared world)
 `server.cjs` is a zero‑dependency Node server that serves the page **and** runs a WebSocket

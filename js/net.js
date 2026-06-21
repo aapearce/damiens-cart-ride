@@ -28,7 +28,7 @@ const Net = (() => {
     }
     ws.onopen = () => {
       connected = true;
-      ws.send(JSON.stringify({ t: "join", name: info.name, color: info.color }));
+      ws.send(JSON.stringify({ t: "join", name: info.name, color: info.color, k: info.k || "standard" }));
     };
     ws.onmessage = (ev) => {
       let m;
@@ -42,7 +42,7 @@ const Net = (() => {
           seen.add(p.id);
           let o = others.get(p.id);
           if (!o) { o = { dispS: p.s }; others.set(p.id, o); }
-          o.name = p.n; o.color = p.c; o.s = p.s; o.v = p.v; o.d = p.d; o.f = p.f;
+          o.name = p.n; o.color = p.c; o.s = p.s; o.v = p.v; o.d = p.d; o.f = p.f; o.k = p.k || "standard";
         }
         for (const id of [...others.keys()]) if (!seen.has(id)) others.delete(id);
       } else if (m.t === "left") {
@@ -53,14 +53,17 @@ const Net = (() => {
     ws.onerror = () => { /* swallow — solo fallback */ };
   }
 
-  function sendState(s, v, d, f) {
+  function sendState(s, v, d, f, k) {
     if (connected && ws && ws.readyState === 1) {
-      ws.send(JSON.stringify({ t: "state", s, v, d: d ? 1 : 0, f: f ? 1 : 0 }));
+      ws.send(JSON.stringify({ t: "state", s, v, d: d ? 1 : 0, f: f ? 1 : 0, k }));
     }
+  }
+  function setCart(k) {
+    if (connected && ws && ws.readyState === 1) ws.send(JSON.stringify({ t: "join", name: myInfo.name, color: myInfo.color, k }));
   }
 
   return {
-    connect, sendState, others,
+    connect, sendState, setCart, others,
     get connected() { return connected; },
     get count() { return others.size + 1; },
   };

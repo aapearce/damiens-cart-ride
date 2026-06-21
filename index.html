@@ -60,9 +60,39 @@
       background: linear-gradient(180deg, #fff, var(--accent) 60%, #ff8a3c); -webkit-background-clip: text; background-clip: text; color: transparent;
       filter: drop-shadow(0 4px 0 rgba(0,0,0,0.4)) drop-shadow(0 0 26px rgba(255,180,60,0.55)); }
     #start .sub { font-size: 15px; letter-spacing: 3px; color: #cfe9ff; opacity: 0.85; text-transform: uppercase; margin-top: -8px; }
-    .card { display: flex; flex-direction: column; gap: 16px; align-items: center; padding: 26px 28px; border-radius: 18px;
+    .card { display: flex; flex-direction: column; gap: 16px; align-items: center; padding: 22px 24px; border-radius: 18px;
       background: rgba(10,12,22,0.72); border: 1px solid rgba(120,200,255,0.34); box-shadow: 0 0 40px rgba(42,159,255,0.22);
-      width: min(440px, 94vw); }
+      width: min(860px, 96vw); }
+    .cardtop { display: flex; gap: 12px; width: 100%; align-items: center; }
+    #wallet { font-size: 20px; font-weight: 900; color: #ffd166; white-space: nowrap; text-shadow: 0 0 10px rgba(255,209,102,0.4); }
+    /* ===== shop grid ===== */
+    #shop { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; width: 100%; }
+    @media (max-width: 620px) { #shop { grid-template-columns: repeat(2, 1fr); } }
+    #shop.nope { animation: shake .4s; }
+    @keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-7px)} 75%{transform:translateX(7px)} }
+    .cartcard { position: relative; display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer;
+      padding: 12px 8px 10px; border-radius: 14px; background: rgba(255,255,255,0.04);
+      border: 2px solid rgba(255,255,255,0.12); transition: transform .12s, border-color .12s, background .12s; overflow: hidden; }
+    .cartcard:hover { transform: translateY(-3px); background: rgba(255,255,255,0.08); }
+    .cartcard.sel { border-color: #ffd166; box-shadow: 0 0 20px -4px #ffd166, inset 0 0 20px rgba(255,209,102,0.08); }
+    .cartcard .cemoji { font-size: 38px; line-height: 1.1; }
+    .cartcard .cname { font-weight: 800; font-size: 14px; text-align: center; }
+    .cartcard .crar { font-size: 10px; letter-spacing: 1px; text-transform: uppercase; padding: 2px 8px; border-radius: 20px; font-weight: 800; }
+    .cartcard .cstats { font-size: 11px; opacity: 0.8; text-align: center; line-height: 1.5; min-height: 30px; }
+    .r-common { color: #cfd6e4; } .crar.r-common { background: rgba(207,214,228,0.16); color: #cfd6e4; }
+    .r-rare { color: #4fb6ff; } .crar.r-rare { background: rgba(79,182,255,0.18); color: #8fd0ff; }
+    .r-epic { color: #c08bff; } .crar.r-epic { background: rgba(162,60,255,0.22); color: #d7b6ff; }
+    .r-legendary { color: #ffd166; } .crar.r-legendary { background: rgba(255,209,102,0.2); color: #ffe08a; }
+    .cartcard.r-legendary { border-color: rgba(255,209,102,0.4); }
+    .cbtn { margin-top: 4px; font-size: 12px; font-weight: 800; letter-spacing: .5px; padding: 6px 10px; border-radius: 8px; width: 100%; text-align: center; }
+    .cbtn.on { background: #ffd166; color: #0a0a12; }
+    .cbtn.sel-btn { background: rgba(120,200,255,0.2); color: #cfe9ff; border: 1px solid rgba(120,200,255,0.5); }
+    .cbtn.buy { background: linear-gradient(135deg,#2ecc71,#1d9e54); color: #04210f; }
+    .cbtn.lock { background: rgba(255,255,255,0.06); color: #8893a5; }
+    #hudmoney { top: 92px; right: 14px; font-size: 17px; font-weight: 900; color: #ffd166; text-align: right; }
+    #garage { bottom: 14px; right: 14px; cursor: pointer; pointer-events: auto; font-family: inherit; font-size: 14px;
+      font-weight: 800; color: #cfe9ff; }
+    #garage:hover { background: rgba(120,200,255,0.18); }
     .card label { font-size: 12px; letter-spacing: 2px; text-transform: uppercase; opacity: 0.7; align-self: flex-start; }
     #name { width: 100%; font-family: inherit; font-size: 18px; text-align: center; letter-spacing: 2px; padding: 12px;
       border-radius: 10px; color: #fff; background: rgba(0,0,0,0.45); border: 2px solid var(--blue); }
@@ -104,7 +134,9 @@
       <div id="progwrap"><div id="prog"></div></div>
     </div>
     <div id="riders" class="panel"><span class="dot off" id="netdot"></span><span id="ridercount">Solo ride</span></div>
-    <div id="hint">▲ / W — go &nbsp;·&nbsp; ▼ / S — brake / reverse &nbsp;·&nbsp; C — camera &nbsp;·&nbsp; R — restart</div>
+    <div id="hudmoney" class="panel">🪙 0</div>
+    <button id="garage" class="panel">🚉 Garage</button>
+    <div id="hint">▲ / W — go &nbsp;·&nbsp; ▼ / S — brake / reverse &nbsp;·&nbsp; C — camera &nbsp;·&nbsp; R — restart &nbsp;·&nbsp; G — garage</div>
   </div>
 
   <div id="warn"></div>
@@ -113,22 +145,24 @@
   <div id="tForward" class="touch">▲</div>
   <div id="tBack" class="touch">▼</div>
 
-  <!-- Start overlay -->
+  <!-- Start overlay / Garage -->
   <div id="start">
     <h1>Damien's Cart Ride</h1>
-    <div class="sub">A 30-minute rail journey · ride together</div>
+    <div class="sub">Ride · grab 🪙 coins · unlock carts</div>
     <div class="card">
-      <label>Rider name</label>
-      <input id="name" maxlength="14" autocomplete="off" spellcheck="false" />
-      <label>Cart colour</label>
-      <div class="swatches" id="swatches"></div>
+      <div class="cardtop">
+        <input id="name" maxlength="14" autocomplete="off" spellcheck="false" placeholder="Rider name" />
+        <div id="wallet">🪙 0</div>
+      </div>
+      <div id="shop"></div>
       <button id="go">Start the ride ▶</button>
       <div class="loading" id="loading"></div>
     </div>
     <div class="howto">
-      Hold <b>▲</b> to roll forward, <b>▼</b> to brake or reverse. The cart steers itself along the rail —
-      your job is the throttle. Hills speed you up and slow you down. <b>Take a tight bend too fast and you
-      fly off the track</b> — back to the start you go! Everyone online rides the same line, so wave as you pass.
+      Hold <b>▲</b> to roll, <b>▼</b> to brake. The cart steers itself — your job is the throttle, and braking
+      for the <b>sharp bends</b> before you fly off. Scoop up the <b>🪙 coins</b> lining the track as you go —
+      get further without crashing to bank more. <b>Unlock new carts in the garage</b>;
+      rarer carts grab coins faster but handle worse.
     </div>
   </div>
 

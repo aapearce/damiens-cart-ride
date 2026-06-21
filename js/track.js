@@ -49,14 +49,14 @@ const Track = (() => {
   // the critical speed is well defined.
   function buildCorners(rng) {
     const corners = [];
-    let s = 260;
+    let s = 300;
     while (s < LENGTH - 400) {
       const tight = rng() < 0.55;
-      const R = tight ? 13 + rng() * 19 : 48 + rng() * 70;   // radius (m) — tighter than before
-      const ang = (tight ? 0.7 + rng() * 1.2 : 0.5 + rng() * 0.9) * (rng() < 0.5 ? 1 : -1);
+      const R = tight ? 15 + rng() * 16 : 40 + rng() * 55;   // radius (m) — eased so a boost into a bend is survivable
+      const ang = (tight ? 0.7 + rng() * 1.1 : 0.5 + rng() * 0.95) * (rng() < 0.5 ? 1 : -1);
       const Lc = Math.abs(ang) * R;                          // arc length
       corners.push({ a: s, b: s + Lc, k: ang / Lc });        // signed curvature
-      s += Lc + 380 + rng() * 700;                           // shorter gaps -> more corners
+      s += Lc + 150 + rng() * 360;                           // much shorter gaps -> lots of corners
     }
     return corners;
   }
@@ -68,11 +68,12 @@ const Track = (() => {
 
     // smooth base wander so straights aren't dead straight (always safe radius)
     const baseYaw = (s) => 0.00055 * Math.sin(s * 0.00041) + 0.00085 * Math.sin(s * 0.00103 + 2.1);
-    // big, steep roller-coaster hills (max slope ~18°)
+    // steep roller-coaster hills, biased toward descents (more downhills)
     const pitch = (s) =>
-      0.165 * Math.sin(s * 0.00062 + 0.5) +
-      0.100 * Math.sin(s * 0.00150 + 2.2) +
-      0.055 * Math.sin(s * 0.00340 + 4.0);
+      0.205 * Math.sin(s * 0.00060 + 0.5) +
+      0.125 * Math.sin(s * 0.00150 + 2.2) +
+      0.070 * Math.sin(s * 0.00340 + 4.0) -
+      0.045;   // net downhill bias
 
     let x = 0, y = 0, z = 0, heading = 0;
     let ci = 0;

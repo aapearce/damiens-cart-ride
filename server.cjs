@@ -95,7 +95,7 @@ server.on("upgrade", (req, socket) => {
   socket.setNoDelay(true);
 
   const id = nextId++;
-  const client = { socket, name: "Rider", color: "#ffcf33", s: 0, v: 0, d: 0, f: 0, lastSeen: Date.now() };
+  const client = { socket, name: "Rider", color: "#ffcf33", k: "standard", s: 0, v: 0, d: 0, f: 0, lastSeen: Date.now() };
   clients.set(id, client);
 
   // Tell the new client its id.
@@ -114,11 +114,13 @@ server.on("upgrade", (req, socket) => {
     if (m.t === "join") {
       client.name = String(m.name || "Rider").slice(0, 14);
       client.color = String(m.color || "#ffcf33").slice(0, 9);
+      if (m.k) client.k = String(m.k).slice(0, 16);
     } else if (m.t === "state") {
       client.s = +m.s || 0;
       client.v = +m.v || 0;
       client.d = m.d ? 1 : 0;
       client.f = m.f ? 1 : 0;
+      if (m.k) client.k = String(m.k).slice(0, 16);
     }
   }
 
@@ -195,7 +197,7 @@ setInterval(() => {
   if (clients.size === 0) return;
   const ps = [];
   for (const [id, c] of clients) {
-    ps.push({ id, n: c.name, c: c.color, s: Math.round(c.s * 100) / 100, v: Math.round(c.v * 10) / 10, d: c.d, f: c.f });
+    ps.push({ id, n: c.name, c: c.color, k: c.k, s: Math.round(c.s * 100) / 100, v: Math.round(c.v * 10) / 10, d: c.d, f: c.f });
   }
   const frame = makeFrame(JSON.stringify({ t: "world", ps }));
   broadcast(frame);
