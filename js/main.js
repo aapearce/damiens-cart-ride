@@ -560,7 +560,8 @@
   function respawn() { s = 0; v = 0; airborne = false; airH = 0; boostT = 0; overLimitT = 0; resetCoins(); Track.sample(0, frame); state = "riding"; placeCart(); snapCamera(); }
   function finish() {
     state = "finished"; v = 0; finishTime = elapsed;
-    toast("Ride complete! 🎉", "Time " + fmtTime(elapsed) + " · press R to ride again");
+    addCoins(10000);
+    toast("Ride complete! 🎉 +10,000 coins!", "Time " + fmtTime(elapsed) + " · press R to ride again");
   }
   function restart() { s = 0; v = 0; airborne = false; airH = 0; boostT = 0; overLimitT = 0; resetCoins(); Track.sample(0, frame); state = "riding"; startTime = performance.now(); placeCart(); snapCamera(); }
 
@@ -776,7 +777,7 @@
     state = "riding"; s = 0; v = 0; airborne = false; airH = 0; boostT = 0; overLimitT = 0; resetCoins(); startTime = performance.now(); Track.sample(0, frame); placeCart(); snapCamera();
     Net.connect({ name: myName, k: selectedId });
     Net.setCart && Net.setCart(selectedId);
-    toast("Off you go!", curCart.name + " · grab the 🪙 coins!");
+    toast("Off you go!", curCart.name + " · reach the end for 10,000 coins! 🪙");
   }
   $("go").onclick = startRide;
   $("name").addEventListener("keydown", (e) => { if (e.key === "Enter") startRide(); });
